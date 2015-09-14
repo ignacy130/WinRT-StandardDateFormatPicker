@@ -24,16 +24,24 @@ namespace DMYWinRTDatePicker
 
     public sealed partial class DatePicker : UserControl, INotifyPropertyChanged
     {
-        private int year = DateTime.Now.Year;
-        private int month = DateTime.Now.Month;
+        // Using a DependencyProperty as the backing store for MaxYear.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MaxYearProperty =
+            DependencyProperty.Register("MaxYear", typeof(int?), typeof(DatePicker), new PropertyMetadata(null));
+
+        // Using a DependencyProperty as the backing store for MinYear.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MinYearProperty =
+            DependencyProperty.Register("MinYear", typeof(int?), typeof(DatePicker), new PropertyMetadata(null));
+
         private int day = DateTime.Now.Day;
+        private int month = DateTime.Now.Month;
+        private int year = DateTime.Now.Year;
 
         public DatePicker()
         {
             this.InitializeComponent();
             SetDaysRange();
             this.MonthControl.ItemsSource = Enumerable.Range(1, 12);
-            this.YearControl.ItemsSource = Enumerable.Range(DateTime.MinValue.Year, DateTime.MaxValue.Year - DateTime.MinValue.Year);
+            this.Loaded += DatePicker_Loaded;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -46,7 +54,6 @@ namespace DMYWinRTDatePicker
             }
         }
 
-
         public int? Day
         {
             get { return day; }
@@ -56,6 +63,18 @@ namespace DMYWinRTDatePicker
                 OnPropertyChanged("Day");
                 OnPropertyChanged("Date");
             }
+        }
+
+        public int MaxYear
+        {
+            get { return (int)GetValue(MaxYearProperty); }
+            set { SetValue(MaxYearProperty, value); }
+        }
+
+        public int MinYear
+        {
+            get { return (int)GetValue(MinYearProperty); }
+            set { SetValue(MinYearProperty, value); }
         }
 
         public int Month
@@ -81,6 +100,26 @@ namespace DMYWinRTDatePicker
                 OnPropertyChanged("Day");
                 OnPropertyChanged("Year");
                 OnPropertyChanged("Date");
+            }
+        }
+
+        private void DatePicker_Loaded(object sender, RoutedEventArgs e)
+        {
+            var minYear = (int?)GetValue(MinYearProperty) ?? DateTime.MinValue.Year;
+            var maxYear = (int?)GetValue(MaxYearProperty) ?? DateTime.MaxValue.Year;
+            this.YearControl.ItemsSource = Enumerable.Range(minYear, maxYear - minYear + 1);
+
+            if (DateTime.Now.Year < minYear)
+            {
+                this.Year = minYear;
+            }
+            else if (DateTime.Now.Year > maxYear)
+            {
+                this.Year = maxYear;
+            }
+            else
+            {
+                this.Year = DateTime.Now.Year;
             }
         }
 
