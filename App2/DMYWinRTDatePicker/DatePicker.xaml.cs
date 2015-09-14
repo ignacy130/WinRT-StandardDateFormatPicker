@@ -18,16 +18,17 @@ using Windows.UI.Xaml.Navigation;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
-namespace App2
+namespace DMYWinRTDatePicker
+
 {
 
-    public sealed partial class MyDatePicker : UserControl, INotifyPropertyChanged
+    public sealed partial class DatePicker : UserControl, INotifyPropertyChanged
     {
         private int year = DateTime.Now.Year;
         private int month = DateTime.Now.Month;
         private int day = DateTime.Now.Day;
 
-        public MyDatePicker()
+        public DatePicker()
         {
             this.InitializeComponent();
             SetDaysRange();
